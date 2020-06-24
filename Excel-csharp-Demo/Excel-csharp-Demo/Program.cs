@@ -12,6 +12,51 @@ namespace Excel_csharp_Demo
     {
         static void Main(string[] args)
         {
+
+            //CrearExcel();
+
+            foreach(var x in LeerExcel())
+            {
+                Console.WriteLine(x.ID + " " + x.Nombre + " " + x.Fecha_Nacimiento.ToShortDateString());
+            }
+
+
+
+            Console.ReadKey();
+        }
+
+        static List<Persona> LeerExcel()
+        {
+            List<Persona> lista = new List<Persona>();
+
+            string PathFile = AppDomain.CurrentDomain.BaseDirectory + "miExcel.xlsx";
+
+            SLDocument F1 = new SLDocument(PathFile);
+
+            int IRow = 2; //En excel empieza desde 1, y como en la 1 estan los headers, empiezo desde la 2
+
+            Persona obj;
+
+            while (!String.IsNullOrEmpty(F1.GetCellValueAsString(IRow,1)))//Mientras la 1ra columna de la fila en la que estoy no este vacia o nulo, sigo, sino salgo, significaria que ya termine de leer
+            {
+                obj = new Persona();
+
+                obj.ID = F1.GetCellValueAsInt32(IRow, 1);
+                obj.Nombre = F1.GetCellValueAsString(IRow, 2);
+                obj.Fecha_Nacimiento = F1.GetCellValueAsDateTime(IRow, 3);
+
+
+                lista.Add(obj);
+
+                IRow++;
+            }
+
+            return lista;
+
+        }
+
+        static void CrearExcel()
+        {
             #region CREACION DE PERSONAS A GUARDAR
             Persona obj1 = new Persona(1, "Arthur Valladares", new DateTime(1999, 10, 16));
             Persona obj2 = new Persona(2, "Javier Nole", new DateTime(2000, 10, 14));
@@ -49,17 +94,21 @@ namespace Excel_csharp_Demo
             //Guardo en la siguiente ruta
 
             oSLDocument.SaveAs(PathFile);
-
-
-            Console.ReadKey();
         }
     }
+
+
 
     public class Persona
     {
         public int ID;
         public string Nombre;
         public DateTime Fecha_Nacimiento;
+
+        public Persona()
+        {
+
+        }
 
         public Persona(int id, string name, DateTime FN)
         {
